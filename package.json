@@ -1,0 +1,68 @@
+{
+  "name": "lazy-i18n",
+  "displayName": "LazyI18n",
+  "publisher": "algesthesiah",
+  "homepage": "https://github.com/algesthesiah/lazy-i18n",
+  "description": "LazyI18n is a full process international solution",
+  "version": "1.0.1",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.71.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "icon": "icon.png",
+  "main": "./dist/index.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.JS2i18n",
+        "title": "LazyI18n: 提取 JS/TS/React 内的中文"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorFocus",
+          "command": "extension.JS2i18n",
+          "group": "LazyI18n"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "rimraf dist && rollup -c",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/algesthesiah/lazy-i18n.git"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.3",
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-commonjs": "^21.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.2.1",
+    "@types/node": "^18.7.23",
+    "@types/vscode": "^1.71.0",
+    "base-ts-config": "^1.0.7",
+    "rollup": "^2.79.1",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "rollup-plugin-postcss": "^4.0.0",
+    "rollup-plugin-preserve-shebangs": "^0.2.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.32.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "loco-api-js": "^1.3.2",
+    "lodash": "^4.17.21",
+    "opencc-js": "^1.0.4"
+  }
+}

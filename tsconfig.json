@@ -1,0 +1,19 @@
+{
+  "extends": "base-ts-config",
+  "compilerOptions": {
+    "suppressImplicitAnyIndexErrors": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "rootDir": "./src",
+    "outDir": "./dist"
+  },
+  "exclude": [
+    "**/node_modules",
+    "**/build",
+    "**/scripts",
+    "**/dist",
+    "**/test",
+    "**/es",
+    "**/lib"
+  ]
+}
