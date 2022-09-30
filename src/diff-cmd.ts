@@ -38,5 +38,5 @@ export const diffCNWithHK = () => {
   diffCommon('zh-CN', 'zh-HK');
 };
 export const diffCNWithEN = () => {
-  diffCommon('zh-CN', 'en');
+  diffCommon('zh-CN', 'en-US');
 };

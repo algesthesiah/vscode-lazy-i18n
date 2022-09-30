@@ -21,7 +21,7 @@ export const exportFiles = async (rootPath: string, showInformationMessage) => {
   }
 
   let downloaded = 0;
-  const locales = ['zh-CN', 'en', 'zh-HK'];
+  const locales = ['zh-CN', 'en-US', 'zh-HK'];
   for (const locale of locales) {
     const filePath = path.join(rootPath, localePath, `${locale}.json`);
     const json = await loco.exportLocale(locale, { fallback: 'zh-CN' });
