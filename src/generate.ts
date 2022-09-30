@@ -75,7 +75,7 @@ const generateReactFile = (file, type, frameworkType) => {
       if (prev !== '`') {
         //对于普通字符串的替换
         currentKey = getCurrentKey(match, file);
-        const _str = `t\`${currentKey}\`\n`;
+        const _str = `t\`${currentKey}\``;
         result = _str;
       } else {
         //对于 `` 拼接字符串的替换
@@ -87,13 +87,13 @@ const generateReactFile = (file, type, frameworkType) => {
         });
         currentKey = getCurrentKey(match, file);
         if (!matchArr.length) {
-          result = `t\`${currentKey}\`\n`;
+          result = `t\`${currentKey}\``;
         } else {
-          const values = JSON.stringify({ ...matchArr });
+          const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
           result = `{t({
                 id: '${currentKey}',
                 values: ${values},
-              })}\n`;
+              })}`;
         }
       }
       // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
@@ -129,7 +129,7 @@ const generateReactFile = (file, type, frameworkType) => {
             if (!matchArr.length) {
               result = `${prev}t\`${currentKey}\`\n${after}`;
             } else {
-              const values = JSON.stringify({ ...matchArr });
+              const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
               result = `${prev}{t({
                 id: '${currentKey}',
                 values: ${values},
