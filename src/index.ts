@@ -41,7 +41,7 @@ function activate(context) {
     generate(currentlyOpenTabfilePath, rootPath, 'js');
     return;
   });
-  let disposable3 = vscode.commands.registerCommand('extension.lbDiffCNWithEN', function () {
+  let disposable3 = vscode.commands.registerCommand('extension.DiffCNWithEN', function () {
     diffCNWithEN();
   });
   let disposable5 = vscode.commands.registerCommand('extension.ExportArchive', function () {
