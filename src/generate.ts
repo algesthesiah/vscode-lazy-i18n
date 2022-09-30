@@ -121,7 +121,7 @@ const generateReactFile = (file, type, frameworkType) => {
             //对于 muscache 中部分的替换
             let matchIndex = 0;
             let matchArr: string[] = [];
-            match = match.replace(/{{([^{}]+)}}/gim, (_, match: string) => {
+            match = match.replace(/{([^{}]+)}/gim, (_, match: string) => {
               matchArr.push(match);
               return `{${matchIndex++}}`;
             });
