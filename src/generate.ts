@@ -75,13 +75,13 @@ const generateReactFile = (file, type, frameworkType) => {
       if (prev !== '`') {
         //对于普通字符串的替换
         currentKey = getCurrentKey(match, file);
-        const _str = `t` + '`' + currentKey + '`';
+        const _str = `t\`${currentKey}\``;
         result = _str;
       } else {
         //对于 `` 拼接字符串的替换
         currentKey = getCurrentKey(match, file);
         result = `t({
-            id: ${currentKey},
+            id: '${currentKey}',
             message: ${match},
           })`;
       }
@@ -111,23 +111,23 @@ const generateReactFile = (file, type, frameworkType) => {
             let matchArr: string[] = [];
             currentKey = getCurrentKey(match, file);
             result = `${prev}{t({
-            id: ${currentKey},
-            message: ${match},
+            id: '${currentKey}',
+            message: '${match}',
           })}${after}`;
           } else {
             currentKey = getCurrentKey(match, file);
             if (prev.match(/^\w+='$/)) {
               //对于属性中普通文本的替换
-              result = `${prev}{t("${currentKey}")}${after}`;
+              result = `${prev}{t\`"${currentKey}"\`}${after}`;
             } else if (prev.match(/^\w+="$/)) {
               //对于属性中普通文本的替换
-              result = `${prev}{t('${currentKey}')}${after}`;
+              result = `${prev}{t\`'${currentKey}'\`}${after}`;
             } else if (prev === '"' || prev === "'") {
               //对于属性中参数形式中的替换
-              result = `t(${prev}${currentKey}${after})`;
+              result = `t\`${prev}${currentKey}${after}\``;
             } else {
               //对于 tag 标签中的普通文本替换
-              result = `${prev}{t('${currentKey}')}${after}`;
+              result = `${prev}{t\`'${currentKey}'\`}${after}`;
             }
           }
           messages[currentKey] = match;
@@ -139,8 +139,8 @@ const generateReactFile = (file, type, frameworkType) => {
     });
   };
 
-  content = replaceTemplate(content);
   content = replaceJS(content);
+  content = replaceTemplate(content);
 
   if (!hasReplaced) {
     return false;
