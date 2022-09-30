@@ -129,7 +129,7 @@ const generateReactFile = (file, type, frameworkType) => {
             });
             currentKey = getCurrentKey(match, file);
             if (!matchArr.length) {
-              result = `${prev}t\`${currentKey}\`\n${after}`;
+              result = `${prev}t\`${currentKey}\`${after}`;
             } else {
               const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
               result = `${prev}{t({
@@ -142,16 +142,16 @@ const generateReactFile = (file, type, frameworkType) => {
             currentKey = getCurrentKey(match, file);
             if (prev.match(/^\w+='$/)) {
               //对于属性中普通文本的替换
-              result = `${prev}{t\`${currentKey}\`}\n${after}`;
+              result = `${prev}{t\`${currentKey}\`}${after}`;
             } else if (prev.match(/^\w+="$/)) {
               //对于属性中普通文本的替换
-              result = `${prev}{t\`${currentKey}\`}\n${after}`;
+              result = `${prev}{t\`${currentKey}\`}${after}`;
             } else if (prev === '"' || prev === "'") {
               //对于属性中参数形式中的替换
-              result = `t\`${prev}${currentKey}${after}\`\n`;
+              result = `t\`${prev}${currentKey}${after}\``;
             } else {
               //对于 tag 标签中的普通文本替换
-              result = `${prev}{t\`${currentKey}\`}\n${after}`;
+              result = `${prev}{t\`${currentKey}\`}${after}`;
             }
           }
           messages[currentKey] = match;
