@@ -4,7 +4,7 @@
   "publisher": "algesthesiah",
   "homepage": "https://github.com/algesthesiah/lazy-i18n",
   "description": "LazyI18n is a full process international solution",
-  "version": "1.0.3",
+  "version": "1.0.7",
   "license": "MIT",
   "engines": {
     "vscode": "^1.71.0"
@@ -13,7 +13,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onCommand:extension.JS2i18n",
+    "onCommand:extension.DiffCNWithEN"
   ],
   "icon": "icon.png",
   "main": "./dist/index.js",
@@ -22,6 +23,10 @@
       {
         "command": "extension.JS2i18n",
         "title": "LazyI18n: 提取 JS/TS/React 内的中文"
+      },
+      {
+        "command": "extension.DiffCNWithEN",
+        "title": "LazyI18n: 提取英文语言包比中文语言包缺少的词条"
       }
     ],
     "menus": {

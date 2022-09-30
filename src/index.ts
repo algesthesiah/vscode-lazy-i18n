@@ -5,6 +5,7 @@ import vscode from 'vscode';
 import { exportFiles } from './export-files';
 import { generate } from './generate';
 import { getRootDir } from './utils';
+import { diffCNWithEN } from './diff-cmd';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -34,10 +35,15 @@ function activate(context) {
     }
 
     const rootPath = getRootDir();
+    if (extname.match(/(jsx|tsx)$/i)) {
+      return generate(currentlyOpenTabfilePath, rootPath, 'jsx');
+    }
     generate(currentlyOpenTabfilePath, rootPath, 'js');
     return;
   });
-
+  let disposable3 = vscode.commands.registerCommand('extension.lbDiffCNWithEN', function () {
+    diffCNWithEN();
+  });
   let disposable5 = vscode.commands.registerCommand('extension.ExportArchive', function () {
     const rootPath = getRootDir();
     if (!rootPath) {
@@ -47,7 +53,7 @@ function activate(context) {
     exportFiles(rootPath, vscode.window.showInformationMessage);
   });
 
-  context.subscriptions.concat([disposable2, disposable5]);
+  context.subscriptions.concat([disposable2, disposable3, disposable5]);
 }
 
 // this method is called when your extension is deactivated

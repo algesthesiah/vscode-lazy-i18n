@@ -75,7 +75,7 @@ const generateReactFile = (file, type, frameworkType) => {
       if (prev !== '`') {
         //对于普通字符串的替换
         currentKey = getCurrentKey(match, file);
-        const _str = `t\`${currentKey}\``;
+        const _str = `t\`${currentKey}\`\n`;
         result = _str;
       } else {
         //对于 `` 拼接字符串的替换
@@ -83,7 +83,7 @@ const generateReactFile = (file, type, frameworkType) => {
         result = `t({
             id: '${currentKey}',
             message: ${match},
-          })`;
+          })\n`;
       }
       // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
       messages[currentKey] = match.replace(/\\n/g, '\n');
@@ -110,24 +110,25 @@ const generateReactFile = (file, type, frameworkType) => {
             //对于 muscache 中部分的替换
             let matchArr: string[] = [];
             currentKey = getCurrentKey(match, file);
+            const _message = match.replace(/(^{)|(}$)/gm, '');
             result = `${prev}{t({
             id: '${currentKey}',
-            message: '${match}',
-          })}${after}`;
+            message: ${_message},
+          })}\n${after}`;
           } else {
             currentKey = getCurrentKey(match, file);
             if (prev.match(/^\w+='$/)) {
               //对于属性中普通文本的替换
-              result = `${prev}{t\`"${currentKey}"\`}${after}`;
+              result = `${prev}{t\`${currentKey}\`}\n${after}`;
             } else if (prev.match(/^\w+="$/)) {
               //对于属性中普通文本的替换
-              result = `${prev}{t\`'${currentKey}'\`}${after}`;
+              result = `${prev}{t\`${currentKey}\`}\n${after}`;
             } else if (prev === '"' || prev === "'") {
               //对于属性中参数形式中的替换
-              result = `t\`${prev}${currentKey}${after}\``;
+              result = `t\`${prev}${currentKey}${after}\`\n`;
             } else {
               //对于 tag 标签中的普通文本替换
-              result = `${prev}{t\`'${currentKey}'\`}${after}`;
+              result = `${prev}{t\`${currentKey}\`}\n${after}`;
             }
           }
           messages[currentKey] = match;
@@ -138,9 +139,8 @@ const generateReactFile = (file, type, frameworkType) => {
       );
     });
   };
-
-  content = replaceJS(content);
   content = replaceTemplate(content);
+  content = replaceJS(content);
 
   if (!hasReplaced) {
     return false;
@@ -149,7 +149,7 @@ const generateReactFile = (file, type, frameworkType) => {
   return true;
 };
 
-const generate = (file: string, rootPath: string | undefined, type = 'js') => {
+const generate = (file: string, rootPath: string | undefined, type = 'jsx') => {
   if (!rootPath) {
     vscode.window.showErrorMessage('rootPath 没有正确获取');
     return;
