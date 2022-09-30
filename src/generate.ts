@@ -79,11 +79,22 @@ const generateReactFile = (file, type, frameworkType) => {
         result = _str;
       } else {
         //对于 `` 拼接字符串的替换
+        let matchIndex = 0;
+        let matchArr: string[] = [];
+        match = match.replace(/(\${)([^{}]+)(})/gim, (_, prev, match) => {
+          matchArr.push(match);
+          return `{${matchIndex++}}`;
+        });
         currentKey = getCurrentKey(match, file);
-        result = `t({
-            id: '${currentKey}',
-            message: ${match},
-          })\n`;
+        if (!matchArr.length) {
+          result = `t\`${currentKey}\`\n`;
+        } else {
+          const values = { ...matchArr };
+          result = `{t({
+                id: '${currentKey}',
+                values: ${values},
+              })}\n`;
+        }
       }
       // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
       messages[currentKey] = match.replace(/\\n/g, '\n');
@@ -108,13 +119,22 @@ const generateReactFile = (file, type, frameworkType) => {
 
           if (match.match(/{[^{}]+}/)) {
             //对于 muscache 中部分的替换
+            let matchIndex = 0;
             let matchArr: string[] = [];
+            match = match.replace(/{{([^{}]+)}}/gim, (_, match: string) => {
+              matchArr.push(match);
+              return `{${matchIndex++}}`;
+            });
             currentKey = getCurrentKey(match, file);
-            const _message = match.replace(/(^{)|(}$)/gm, '');
-            result = `${prev}{t({
-            id: '${currentKey}',
-            message: ${_message},
-          })}\n${after}`;
+            if (!matchArr.length) {
+              result = `${prev}t\`${currentKey}\`\n${after}`;
+            } else {
+              const values = { ...matchArr };
+              result = `${prev}{t({
+                id: '${currentKey}',
+                values: ${values},
+              })}\n${after}`;
+            }
           } else {
             currentKey = getCurrentKey(match, file);
             if (prev.match(/^\w+='$/)) {
