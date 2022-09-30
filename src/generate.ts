@@ -94,6 +94,7 @@ const generateReactFile = (file, type, frameworkType) => {
                 id: '${currentKey}',
                 values: ${values},
               })}`;
+          match = match.replace(/^({`)|(`})$/g, '');
         }
       }
       // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
@@ -117,11 +118,12 @@ const generateReactFile = (file, type, frameworkType) => {
           let result = '';
           let currentKey;
 
-          if (match.match(/{[^{}]+}/)) {
+          if (match.match(/{[^\{}]+}/)) {
             //对于 muscache 中部分的替换
             let matchIndex = 0;
             let matchArr: string[] = [];
-            match = match.replace(/{([^{}]+)}/gim, (_, match: string) => {
+            // match = match.replace(/(\${)([^{}]+)(})/gim, (_, prev, match) => {
+            match = match.replace(/{([^\${}]+)}/gim, (_, match: string) => {
               matchArr.push(match);
               return `{${matchIndex++}}`;
             });
@@ -134,6 +136,7 @@ const generateReactFile = (file, type, frameworkType) => {
                 id: '${currentKey}',
                 values: ${values},
               })}\n${after}`;
+              match = match.replace(/^({`)|(`})$/g, '');
             }
           } else {
             currentKey = getCurrentKey(match, file);
