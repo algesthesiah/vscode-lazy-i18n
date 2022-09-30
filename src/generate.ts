@@ -89,7 +89,7 @@ const generateReactFile = (file, type, frameworkType) => {
         if (!matchArr.length) {
           result = `t\`${currentKey}\`\n`;
         } else {
-          const values = { ...matchArr };
+          const values = JSON.stringify({ ...matchArr });
           result = `{t({
                 id: '${currentKey}',
                 values: ${values},
@@ -129,7 +129,7 @@ const generateReactFile = (file, type, frameworkType) => {
             if (!matchArr.length) {
               result = `${prev}t\`${currentKey}\`\n${after}`;
             } else {
-              const values = { ...matchArr };
+              const values = JSON.stringify({ ...matchArr });
               result = `${prev}{t({
                 id: '${currentKey}',
                 values: ${values},
