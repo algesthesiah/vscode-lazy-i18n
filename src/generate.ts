@@ -155,8 +155,8 @@ const generate = (file: string, rootPath: string | undefined, type = 'js') => {
     return;
   }
 
-  const { localePath, frameworkType, ext = 'po' } = getConfig();
-  i18nFile = path.join(rootPath, localePath, `zh-CN.${ext}`);
+  const { localePath, frameworkType, extName = 'messages.json' } = getConfig();
+  i18nFile = path.join(rootPath, localePath, `zh-CN`, extName);
   if (!fs.existsSync(i18nFile)) {
     vscode.window.showErrorMessage(`I18n 文件："${i18nFile}" 没有找到`);
     return;

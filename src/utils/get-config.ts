@@ -10,7 +10,7 @@ export interface IConfig {
   locoExportKey: string;
   localePath: string;
   // I18n 文件扩展名，默认 json，多语言文件后缀不一定是 json
-  ext: string;
+  extName: string;
   frameworkType?: FrameworkType;
   keyPrefixMaxDepth: number;
   /**
@@ -26,7 +26,7 @@ export interface IConfig {
 const DEFAULT_CONFIG: IConfig = {
   rootPath: '',
   localePath: 'lang',
-  ext: 'po',
+  extName: 'messages.json',
   frameworkType: 'react',
   keyPrefixMaxDepth: 0,
   stripKeyPrefix: '',
@@ -81,7 +81,7 @@ export const getConfig = (): IConfig => {
     config.rootPath = rootPath;
     config.locoExportKey = lazyI18n.locoExportKey;
     config.localePath = lazyI18n.localePath || lazyI18n.langPath || DEFAULT_CONFIG.localePath;
-    config.ext = lazyI18n.ext || DEFAULT_CONFIG.ext;
+    config.extName = lazyI18n.extName || DEFAULT_CONFIG.extName;
     config.frameworkType = lazyI18n.frameworkType || DEFAULT_CONFIG.frameworkType;
     config.keyPrefixMaxDepth = lazyI18n.keyPrefixMaxDepth || DEFAULT_CONFIG.keyPrefixMaxDepth;
     config.stripKeyPrefix = lazyI18n.stripKeyPrefix || DEFAULT_CONFIG.stripKeyPrefix;
