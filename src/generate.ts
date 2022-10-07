@@ -68,6 +68,7 @@ const generateReactFile = (file, type, frameworkType) => {
       comments[commentsKey] = match;
       return commentsKey;
     });
+    /** 匹配字符串中文 `` '' "" */
     match = match.replace(/(['"`])([^'"`\n\r]*[\u4e00-\u9fa5]+[^'"`\n\r]*)(['"`])/gim, (_, prev, match, after) => {
       match = match.trim();
       let currentKey;
@@ -90,10 +91,10 @@ const generateReactFile = (file, type, frameworkType) => {
           result = `t\`${currentKey}\``;
         } else {
           const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
-          result = `{t({
+          result = `t({
                 id: '${currentKey}',
                 values: ${values},
-              })}`;
+              })`;
           match = match.replace(/^({`)|(`})$/g, '');
         }
       }
@@ -103,62 +104,61 @@ const generateReactFile = (file, type, frameworkType) => {
       hasReplaced = true;
       return result;
     });
+    /** 匹配纯文本 */
+    match = match.replace(/([\s])([^'"`\n\r]*[\u4e00-\u9fa5]+[^'"`\n\r]*)([\s])/gim, (_, prev, match, after) => {
+      match = match.trim();
+      let currentKey = getCurrentKey(match, file);
+      // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
+      messages[currentKey] = match.replace(/\\n/g, '\n');
+      messagesHash[match] = currentKey;
+      hasReplaced = true;
+      return `{t\`${currentKey}\`}`;
+    });
     //换回注释
     return match.replace(/\/\*comment_\d+\*\//gim, match => {
       return comments[match];
     });
   };
-
+  /** 匹配标签 */
   const replaceTemplate = (oriContent: string) => {
-    return oriContent.replace(/<(.|\n|\r)*>/gim, match => {
-      return match.replace(
-        /(\w+='|\w+="|>|'|")([^'"<>]*[\u4e00-\u9fa5]+[^'"<>]*)(['"<])/gim,
-        (_, prev, match, after) => {
-          match = match.trim();
-          let result = '';
-          let currentKey;
-
-          if (match.match(/{[^\{}]+}/)) {
-            //对于 muscache 中部分的替换
-            let matchIndex = 0;
-            let matchArr: string[] = [];
-            match = match.replace(/\${([^{}]+)}/gim, (_, match: string) => {
-              matchArr.push(match);
-              return `{${matchIndex++}}`;
-            });
-            currentKey = getCurrentKey(match, file);
-            if (!matchArr.length) {
-              result = `${prev}t\`${currentKey}\`${after}`;
-            } else {
-              const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
-              result = `${prev}{t({
+    /**
+     * icon: <Manager />,
+     *    <CategoryTabs categories={categories}>
+          <HomeTable data={data} columns={columns} />
+        </CategoryTabs>
+     */
+    return oriContent.replace(/<[^>\/>]*(.)*/gim, match => {
+      return match.replace(/(\w+='|\w+=")([^'"<>]*[\u4e00-\u9fa5]+[^'"<>]*)(['"])/gim, (_, prev, match, after) => {
+        match = match.trim();
+        let result = '';
+        let currentKey;
+        if (match.match(/{[^\{}]+}/)) {
+          //对于 muscache 中部分的替换
+          let matchIndex = 0;
+          let matchArr: string[] = [];
+          match = match.replace(/\${([^{}]+)}/gim, (_, match: string) => {
+            matchArr.push(match);
+            return `{${matchIndex++}}`;
+          });
+          currentKey = getCurrentKey(match, file);
+          if (!matchArr.length) {
+            result = `${prev}t\`${currentKey}\`${after}`;
+          } else {
+            const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
+            result = `${prev}{t({
                 id: '${currentKey}',
                 values: ${values},
               })}\n${after}`;
-              match = match.replace(/^({`)|(`})$/g, '');
-            }
-          } else {
-            currentKey = getCurrentKey(match, file);
-            if (prev.match(/^\w+='$/)) {
-              //对于属性中普通文本的替换
-              result = `${prev}{t\`${currentKey}\`}${after}`;
-            } else if (prev.match(/^\w+="$/)) {
-              //对于属性中普通文本的替换
-              result = `${prev}{t\`${currentKey}\`}${after}`;
-            } else if (prev === '"' || prev === "'") {
-              //对于属性中参数形式中的替换
-              result = `t\`${prev}${currentKey}${after}\``;
-            } else {
-              //对于 tag 标签中的普通文本替换
-              result = `${prev}{t\`${currentKey}\`}${after}`;
-            }
+            match = match.replace(/^({`)|(`})$/g, '');
           }
-          messages[currentKey] = match;
-          messagesHash[match] = currentKey;
-          hasReplaced = true;
-          return result;
+        } else {
+          result = `${prev.replace(/['|"]/, '')}{t\`${currentKey}\`}${after.replace(/['|"]/, '')}`;
         }
-      );
+        messages[currentKey] = match;
+        messagesHash[match] = currentKey;
+        hasReplaced = true;
+        return result;
+      });
     });
   };
   content = replaceTemplate(content);

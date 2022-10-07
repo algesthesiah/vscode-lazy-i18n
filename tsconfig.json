@@ -7,6 +7,12 @@
     "rootDir": "./src",
     "outDir": "./dist"
   },
+  "ts-node": {
+    "compilerOptions": {
+     "types": ["node"],
+     "module": "CommonJS",
+    },
+  },
   "exclude": [
     "**/node_modules",
     "**/build",

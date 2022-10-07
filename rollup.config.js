@@ -27,7 +27,7 @@ const config = [
         exclude: ['node_modules/**'],
         plugins: ['@babel/plugin-transform-runtime'],
       }),
-      // terser(),
+      terser(),
     ],
   },
 ];
