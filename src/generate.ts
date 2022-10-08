@@ -105,15 +105,18 @@ const generateReactFile = (file, type, frameworkType) => {
       return result;
     });
     /** 匹配纯文本 */
-    match = match.replace(/([\s])([^'"`\n\r]*[\u4e00-\u9fa5]+[^'"`\n\r]*)([\s])/gim, (_, prev, match, after) => {
-      match = match.trim();
-      let currentKey = getCurrentKey(match, file);
-      // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
-      messages[currentKey] = match.replace(/\\n/g, '\n');
-      messagesHash[match] = currentKey;
-      hasReplaced = true;
-      return `{t\`${currentKey}\`}`;
-    });
+    match = match.replace(
+      /([^'"`\u4e00-\u9fa5\n\r\s]*)([\u4e00-\u9fa5]+)([^'"`\u4e00-\u9fa5\n\r\s]*)/gim,
+      (_, prev, match, after) => {
+        match = match.trim();
+        let currentKey = getCurrentKey(match, file);
+        // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
+        messages[currentKey] = match.replace(/\\n/g, '\n');
+        messagesHash[match] = currentKey;
+        hasReplaced = true;
+        return `${prev}{t\`${currentKey}\`}${after}`;
+      }
+    );
     //换回注释
     return match.replace(/\/\*comment_\d+\*\//gim, match => {
       return comments[match];
