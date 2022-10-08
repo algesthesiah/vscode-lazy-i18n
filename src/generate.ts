@@ -152,6 +152,7 @@ const generateReactFile = (file, type, frameworkType) => {
             match = match.replace(/^({`)|(`})$/g, '');
           }
         } else {
+          currentKey = getCurrentKey(match, file);
           result = `${prev.replace(/['|"]/, '')}{t\`${currentKey}\`}${after.replace(/['|"]/, '')}`;
         }
         messages[currentKey] = match;
