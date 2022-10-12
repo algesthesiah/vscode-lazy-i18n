@@ -69,44 +69,47 @@ const generateReactFile = (file, type, frameworkType) => {
       return commentsKey;
     });
     /** 匹配字符串中文 `` '' "" */
-    match = match.replace(/(['"`])([^'"`\n\r]*[\u4e00-\u9fa5]+[^'"`\n\r]*)(['"`])/gim, (_, prev, match, after) => {
-      match = match.trim();
-      let currentKey;
-      let result = '';
-      if (prev !== '`') {
-        //对于普通字符串的替换
-        currentKey = getCurrentKey(match, file);
-        const _str = `t\`${currentKey}\``;
-        result = _str;
-      } else {
-        //对于 `` 拼接字符串的替换
-        let matchIndex = 0;
-        let matchArr: string[] = [];
-        match = match.replace(/(\${)([^{}]+)(})/gim, (_, prev, match) => {
-          matchArr.push(match);
-          return `{${matchIndex++}}`;
-        });
-        currentKey = getCurrentKey(match, file);
-        if (!matchArr.length) {
-          result = `t\`${currentKey}\``;
+    match = match.replace(
+      /(['"`])([^'"`\n\r]*[\u4e00-\u9fa5|\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3010|\u3011|\u007e]+[^'"`\n\r]*)(['"`])/gim,
+      (_, prev, match, after) => {
+        match = match.trim();
+        let currentKey;
+        let result = '';
+        if (prev !== '`') {
+          //对于普通字符串的替换
+          currentKey = getCurrentKey(match, file);
+          const _str = `t\`${currentKey}\``;
+          result = _str;
         } else {
-          const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
-          result = `t({
+          //对于 `` 拼接字符串的替换
+          let matchIndex = 0;
+          let matchArr: string[] = [];
+          match = match.replace(/(\${)([^{}]+)(})/gim, (_, prev, match) => {
+            matchArr.push(match);
+            return `{${matchIndex++}}`;
+          });
+          currentKey = getCurrentKey(match, file);
+          if (!matchArr.length) {
+            result = `t\`${currentKey}\``;
+          } else {
+            const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
+            result = `t({
                 id: '${currentKey}',
                 values: ${values},
               })`;
-          match = match.replace(/^({`)|(`})$/g, '');
+            match = match.replace(/^({`)|(`})$/g, '');
+          }
         }
+        // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
+        messages[currentKey] = match.replace(/\\n/g, '\n');
+        messagesHash[match] = currentKey;
+        hasReplaced = true;
+        return result;
       }
-      // readFileSync 时，会把 value 里的\n转仓\\n，在这里需要转回去
-      messages[currentKey] = match.replace(/\\n/g, '\n');
-      messagesHash[match] = currentKey;
-      hasReplaced = true;
-      return result;
-    });
+    );
     /** 匹配纯文本 */
     match = match.replace(
-      /([^'"`\u4e00-\u9fa5\n\r\s]*)([\u4e00-\u9fa5]+)([^'"`\u4e00-\u9fa5\n\r\s]*)/gim,
+      /([^'"`\u4e00-\u9fa5|\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3010|\u3011|\u007e\n\r\s]*)([\u4e00-\u9fa5|\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3010|\u3011|\u007e]+)([^'"`\u4e00-\u9fa5|\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3010|\u3011|\u007e\n\r\s]*)/gim,
       (_, prev, match, after) => {
         match = match.trim();
         let currentKey = getCurrentKey(match, file);
@@ -131,38 +134,41 @@ const generateReactFile = (file, type, frameworkType) => {
         </CategoryTabs>
      */
     return oriContent.replace(/<[^>\/>]*(.)*/gim, match => {
-      return match.replace(/(\w+='|\w+=")([^'"<>]*[\u4e00-\u9fa5]+[^'"<>]*)(['"])/gim, (_, prev, match, after) => {
-        match = match.trim();
-        let result = '';
-        let currentKey;
-        if (match.match(/{[^\{}]+}/)) {
-          //对于 muscache 中部分的替换
-          let matchIndex = 0;
-          let matchArr: string[] = [];
-          match = match.replace(/\${([^{}]+)}/gim, (_, match: string) => {
-            matchArr.push(match);
-            return `{${matchIndex++}}`;
-          });
-          currentKey = getCurrentKey(match, file);
-          if (!matchArr.length) {
-            result = `${prev}t\`${currentKey}\`${after}`;
-          } else {
-            const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
-            result = `${prev}{t({
+      return match.replace(
+        /(\w+='|\w+=")([^'"<>]*[\u4e00-\u9fa5|\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3010|\u3011|\u007e]+[^'"<>]*)(['"])/gim,
+        (_, prev, match, after) => {
+          match = match.trim();
+          let result = '';
+          let currentKey;
+          if (match.match(/{[^\{}]+}/)) {
+            //对于 muscache 中部分的替换
+            let matchIndex = 0;
+            let matchArr: string[] = [];
+            match = match.replace(/\${([^{}]+)}/gim, (_, match: string) => {
+              matchArr.push(match);
+              return `{${matchIndex++}}`;
+            });
+            currentKey = getCurrentKey(match, file);
+            if (!matchArr.length) {
+              result = `${prev}t\`${currentKey}\`${after}`;
+            } else {
+              const values = `{${matchArr.map((k, i) => `${i}:${k}`).toString()}}`;
+              result = `${prev}{t({
                 id: '${currentKey}',
                 values: ${values},
               })}\n${after}`;
-            match = match.replace(/^({`)|(`})$/g, '');
+              match = match.replace(/^({`)|(`})$/g, '');
+            }
+          } else {
+            currentKey = getCurrentKey(match, file);
+            result = `${prev.replace(/['|"]/, '')}{t\`${currentKey}\`}${after.replace(/['|"]/, '')}`;
           }
-        } else {
-          currentKey = getCurrentKey(match, file);
-          result = `${prev.replace(/['|"]/, '')}{t\`${currentKey}\`}${after.replace(/['|"]/, '')}`;
+          messages[currentKey] = match;
+          messagesHash[match] = currentKey;
+          hasReplaced = true;
+          return result;
         }
-        messages[currentKey] = match;
-        messagesHash[match] = currentKey;
-        hasReplaced = true;
-        return result;
-      });
+      );
     });
   };
   content = replaceTemplate(content);
