@@ -8,7 +8,7 @@ const writeMessage = (json: Object, filePath: string) => {
 };
 
 export const exportFiles = async (rootPath: string, showInformationMessage) => {
-  const { localePath, locoExportKey } = getConfig();
+  const { localePath, locoExportKey, extName } = getConfig();
 
   let loco;
   if (locoExportKey) {
@@ -21,9 +21,10 @@ export const exportFiles = async (rootPath: string, showInformationMessage) => {
   }
 
   let downloaded = 0;
-  const locales = ['zh-CN', 'en-US', 'zh-HK'];
+  const locales = ['zh-CN', 'en-US'];
   for (const locale of locales) {
-    const filePath = path.join(rootPath, localePath, `${locale}.json`);
+    const filePath = path.join(rootPath, localePath, locale, extName);
+
     const json = await loco.exportLocale(locale, { fallback: 'zh-CN' });
     if (json.error) {
       showInformationMessage(`${locale} 语言文件下载失败，${json.error}`);
