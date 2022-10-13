@@ -4,7 +4,7 @@
   "publisher": "algesthesiah",
   "homepage": "https://github.com/algesthesiah/lazy-i18n",
   "description": "LazyI18n is a full process international solution",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "license": "MIT",
   "engines": {
     "vscode": "^1.71.0"
@@ -27,10 +27,6 @@
       {
         "command": "extension.DiffCNWithEN",
         "title": "LazyI18n: 提取英文语言包比中文语言包缺少的词条"
-      },
-      {
-        "command": "extension.ExportArchive",
-        "title": "LazyI18n: 下载该项目多语言文件"
       }
     ],
     "menus": {
@@ -43,11 +39,6 @@
         {
           "when": "editorFocus",
           "command": "extension.DiffCNWithEN",
-          "group": "LazyI18n"
-        },
-        {
-          "when": "editorFocus",
-          "command": "extension.ExportArchive",
           "group": "LazyI18n"
         }
       ]
