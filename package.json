@@ -4,7 +4,7 @@
   "publisher": "algesthesiah",
   "homepage": "https://github.com/algesthesiah/lazy-i18n",
   "description": "LazyI18n is a full process international solution",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "license": "MIT",
   "engines": {
     "vscode": "^1.71.0"
